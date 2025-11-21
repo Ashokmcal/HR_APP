@@ -104,17 +104,31 @@ class RAGPipeline:
             self.config_loader.get_retrieval_config()
         )
 
-        # Create RAG prompt template
-        template = """Answer the question based only on the following context:
+        # Create RAG prompt template with system message
+        # Get system prompt from config (must be set in .env)
+        rag_config = self.config_loader.get_rag_config()
+        system_prompt = rag_config.get('system_prompt', '')
+
+        # Raise error if system prompt is not configured
+        if not system_prompt:
+            raise ValueError(
+                "SYSTEM_PROMPT must be configured in .env file. "
+                "Please add SYSTEM_PROMPT to your .env file with your desired system prompt. "
+                "See .env.example for the default prompt template."
+            )
+
+        human_prompt = """Context from HR Policy Documents:
 
 {context}
 
-Question: {question}
+Employee Question: {question}
 
-Answer:"""
+Please provide a helpful answer based on the context above:"""
 
-        prompt = ChatPromptTemplate.from_template(template)
-        # print(prompt)
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", human_prompt)
+        ])
 
         # Create RAG chain
         def format_docs(docs: List[Document]) -> str:

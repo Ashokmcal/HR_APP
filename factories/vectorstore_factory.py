@@ -7,9 +7,6 @@ from langchain_core.embeddings import Embeddings
 from .base_factory import BaseFactory
 from utils.config_types import VectorDBType
 
-DEFAULT_PERSISTENT_DIR = './indexes/chroma_db'
-DEFAULT_COLLECTION_NAME = 'rag_documents'
-
 class VectorStoreFactory(BaseFactory):
     """Factory for creating vector store instances."""
 
@@ -57,8 +54,8 @@ class VectorStoreFactory(BaseFactory):
         Returns:
             Chroma instance
         """
-        persist_directory = config.get('persist_directory', DEFAULT_PERSISTENT_DIR)
-        collection_name = config.get('collection_name', DEFAULT_COLLECTION_NAME)
+        persist_directory = config.get('persist_directory')
+        collection_name = config.get('collection_name')
 
         # Create persist directory if it doesn't exist
         Path(persist_directory).mkdir(parents=True, exist_ok=True)

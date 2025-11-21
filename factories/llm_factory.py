@@ -1,12 +1,10 @@
 """LLM Factory implementation."""
+import os
 from typing import Any, Dict
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from .base_factory import BaseFactory
 from utils.config_types import LLMType
-
-DEFAULT_MODEL_NAME = 'gpt-4o-mini'
-DEFAULT_MODEL_TEMPERATURE = 0.7
-DEFAULT_MODEL_TOKEN_SIZE = 500
 
 class LLMFactory(BaseFactory):
     """Factory for creating LLM instances."""
@@ -28,6 +26,8 @@ class LLMFactory(BaseFactory):
 
         if llm_type == LLMType.OPENAI:
             return self._create_openai_llm(config)
+        elif llm_type == LLMType.ANTHROPIC:
+            return self._create_anthropic_llm(config)
         else:
             raise ValueError(f"Unsupported LLM type: {llm_type}")
 
@@ -42,7 +42,23 @@ class LLMFactory(BaseFactory):
             ChatOpenAI instance
         """
         return ChatOpenAI(
-            model = config.get('model_name', DEFAULT_MODEL_NAME),
-            temperature = config.get('temperature', DEFAULT_MODEL_TEMPERATURE),
-            max_tokens = config.get('max_tokens', DEFAULT_MODEL_TOKEN_SIZE)
+            model=config.get('model_name'),
+            temperature=config.get('temperature'),
+            max_tokens=config.get('max_tokens')
+        )
+
+    def _create_anthropic_llm(self, config: Dict[str, Any]) -> ChatAnthropic:
+        """
+        Create an Anthropic LLM instance.
+
+        Args:
+            config: Anthropic configuration
+
+        Returns:
+            ChatAnthropic instance
+        """
+        return ChatAnthropic(
+            model=config.get('model_name'),
+            temperature=config.get('temperature'),
+            max_tokens=config.get('max_tokens')
         )
