@@ -13,11 +13,14 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Set Up API Key
+### 2. Set Up Configuration
 
 ```bash
-# Create .env file
-echo "OPENAI_API_KEY=your_api_key_here" > .env
+# Copy example configuration
+cp .env.example .env
+
+# Edit .env file with your settings and API keys
+# All configuration is now in environment variables
 ```
 
 ### 3. Index Your First Document
@@ -100,12 +103,12 @@ python main.py --config my_config.yaml index document.pdf
 
 ## Configuration Tips
 
-Edit `config/config.yaml` for:
+Edit `.env` file for:
 
-- **Better accuracy**: Increase `top_k` to 5-7
-- **Faster responses**: Use smaller model like `gpt-4o-mini`
-- **Larger documents**: Increase `chunk_size` to 1500
-- **More context**: Increase `chunk_overlap` to 300
+- **Better accuracy**: Set `RETRIEVAL_TOP_K=6`
+- **Faster responses**: Use `LLM_MODEL_NAME=claude-haiku-4-5-20251001`
+- **Larger documents**: Set `DOCUMENT_CHUNK_SIZE=1500`
+- **More context**: Set `DOCUMENT_CHUNK_OVERLAP=300`
 
 ## Troubleshooting
 

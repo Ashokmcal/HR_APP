@@ -63,7 +63,7 @@ pip install -r requirements.txt
 4. Set up environment variables:
 ```bash
 cp .env.example .env
-# Edit .env and add your OpenAI API key
+# Edit .env and configure all application settings including API keys
 ```
 
 5. Configure the application:
@@ -73,45 +73,54 @@ cp .env.example .env
 
 ## Configuration
 
-The application is configured via `config/config.yaml`. Key configuration options:
+The application is configured via environment variables in the `.env` file. All configuration has been moved from code to environment variables for better security and flexibility. Key configuration options:
 
 ### LLM Configuration
-```yaml
-llm:
-  type: "openai"
-  model_name: "gpt-4o-mini"
-  temperature: 0.7
-  max_tokens: 500
+```bash
+# In .env file
+LLM_TYPE=anthropic
+LLM_MODEL_NAME=claude-haiku-4-5-20251001
+LLM_TEMPERATURE=0.7
+LLM_MAX_TOKENS=500
 ```
 
 ### Embedding Configuration
-```yaml
-embedding:
-  type: "openai"
-  model_name: "text-embedding-3-small"
+```bash
+# In .env file
+EMBEDDING_TYPE=huggingface
+EMBEDDING_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
 ```
 
 ### Vector Store Configuration
-```yaml
-vectorstore:
-  type: "chroma"
-  persist_directory: "./data/chroma_db"
-  collection_name: "rag_documents"
+```bash
+# In .env file
+VECTORSTORE_TYPE=chroma
+VECTORSTORE_PERSIST_DIRECTORY=./indexes/chroma_db
+VECTORSTORE_COLLECTION_NAME=rag_documents
 ```
 
 ### Document Processing
-```yaml
-document_processing:
-  chunk_size: 1000
-  chunk_overlap: 200
+```bash
+# In .env file
+DOCUMENT_CHUNK_SIZE=1000
+DOCUMENT_CHUNK_OVERLAP=200
 ```
 
 ### Retrieval Configuration
-```yaml
-retrieval:
-  top_k: 4
-  search_type: "similarity"
+```bash
+# In .env file
+RETRIEVAL_TOP_K=4
+RETRIEVAL_SEARCH_TYPE=similarity
 ```
+
+### System Prompt Configuration
+```bash
+# In .env file
+# Customize how the AI assistant responds to queries
+SYSTEM_PROMPT=You are an AI HR Assistant for TechnoSphere India Private Limited...
+```
+
+See [SYSTEM_PROMPT_GUIDE.md](SYSTEM_PROMPT_GUIDE.md) for detailed customization options and examples.
 
 ## Usage
 

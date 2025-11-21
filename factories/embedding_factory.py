@@ -1,10 +1,9 @@
 """Embedding Factory implementation."""
 from typing import Any, Dict
 from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from .base_factory import BaseFactory
 from utils.config_types import EmbeddingModelType
-
-DEFAULT_MODEL_NAME = 'text-embedding-3-small'
 
 class EmbeddingFactory(BaseFactory):
     """Factory for creating embedding model instances."""
@@ -26,6 +25,8 @@ class EmbeddingFactory(BaseFactory):
 
         if embedding_type == EmbeddingModelType.OPENAI:
             return self._create_openai_embedding(config)
+        elif embedding_type == EmbeddingModelType.HUGGINGFACE:
+            return self._create_huggingface_embedding(config)
         else:
             raise ValueError(f"Unsupported embedding type: {embedding_type}")
 
@@ -40,5 +41,19 @@ class EmbeddingFactory(BaseFactory):
             OpenAIEmbeddings instance
         """
         return OpenAIEmbeddings(
-            model=config.get('model_name', DEFAULT_MODEL_NAME)
+            model=config.get('model_name')
+        )
+
+    def _create_huggingface_embedding(self, config: Dict[str, Any]) -> HuggingFaceEmbeddings:
+        """
+        Create a Hugging Face embedding instance.
+
+        Args:
+            config: Hugging Face embedding configuration
+
+        Returns:
+            HuggingFaceEmbeddings instance
+        """
+        return HuggingFaceEmbeddings(
+            model_name=config.get('model_name')
         )

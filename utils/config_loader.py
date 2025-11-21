@@ -1,38 +1,55 @@
 """Configuration loader utility."""
-import yaml
-from pathlib import Path
+import os
 from typing import Dict, Any
 
 
 class ConfigLoader:
-    """Loads and manages configuration from YAML file."""
+    """Loads and manages configuration from environment variables."""
 
-    def __init__(self, config_path: str = "config/config.yaml"):
+    def __init__(self, config_path: str = None):
         """
         Initialize the configuration loader.
 
         Args:
-            config_path: Path to the YAML configuration file
+            config_path: Deprecated - kept for compatibility
         """
-        self.config_path = Path(config_path)
         self._config = None
 
     def load_config(self) -> Dict[str, Any]:
         """
-        Load configuration from YAML file.
+        Load configuration from environment variables.
 
         Returns:
             Dictionary containing configuration
-
-        Raises:
-            FileNotFoundError: If config file doesn't exist
-            yaml.YAMLError: If config file is invalid
         """
-        if not self.config_path.exists():
-            raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
-
-        with open(self.config_path, 'r') as f:
-            self._config = yaml.safe_load(f)
+        self._config = {
+            'llm': {
+                'type': os.getenv('LLM_TYPE', 'anthropic'),
+                'model_name': os.getenv('LLM_MODEL_NAME', 'claude-haiku-4-5-20251001'),
+                'temperature': float(os.getenv('LLM_TEMPERATURE', '0.7')),
+                'max_tokens': int(os.getenv('LLM_MAX_TOKENS', '500'))
+            },
+            'embedding': {
+                'type': os.getenv('EMBEDDING_TYPE', 'huggingface'),
+                'model_name': os.getenv('EMBEDDING_MODEL_NAME', 'sentence-transformers/all-MiniLM-L6-v2')
+            },
+            'vectorstore': {
+                'type': os.getenv('VECTORSTORE_TYPE', 'chroma'),
+                'persist_directory': os.getenv('VECTORSTORE_PERSIST_DIRECTORY', './indexes/chroma_db'),
+                'collection_name': os.getenv('VECTORSTORE_COLLECTION_NAME', 'rag_documents')
+            },
+            'document_processing': {
+                'chunk_size': int(os.getenv('DOCUMENT_CHUNK_SIZE', '1000')),
+                'chunk_overlap': int(os.getenv('DOCUMENT_CHUNK_OVERLAP', '200'))
+            },
+            'retrieval': {
+                'top_k': int(os.getenv('RETRIEVAL_TOP_K', '4')),
+                'search_type': os.getenv('RETRIEVAL_SEARCH_TYPE', 'similarity')
+            },
+            'rag': {
+                'system_prompt': os.getenv('SYSTEM_PROMPT', '')
+            }
+        }
 
         return self._config
 
@@ -67,3 +84,7 @@ class ConfigLoader:
     def get_retrieval_config(self) -> Dict[str, Any]:
         """Get retrieval configuration."""
         return self.config.get('retrieval', {})
+
+    def get_rag_config(self) -> Dict[str, Any]:
+        """Get RAG configuration including system prompt."""
+        return self.config.get('rag', {})
